@@ -320,9 +320,9 @@ int interactive()
 int main(int argc, char* argv[])
 {
     printf(
-        "GBlinkDX PC Client v0.5\n"
+        "GBlinkDX PC Client v0.5+dev\n"
         "Original GBlinkdl by Brian Provinciano November 2nd, 2005 http://www.bripro.com\n"
-		"Modified by taizou 2016-2024\n\n");
+		"Modified by taizou 2016-2025\n\n");
 
     if(argc < 2) {
 		printf("Usage: gblinkdx \"output filename\" [options]\n"
