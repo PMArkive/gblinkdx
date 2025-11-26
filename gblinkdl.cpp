@@ -35,9 +35,9 @@ GBHDR hdr;
 U8 bank0[0x4000];
 char szt[1000];
 bool quietMode = false;
-bool xbooCompat = false;
+bool xbooCompatOpt = false;
 
-unsigned short dataPort = LPTREG_DATA;
+unsigned short dataPortOpt = LPTREG_DATA;
 
 void printMessage(const char* message)
 {
@@ -317,16 +317,28 @@ int interactive()
 }
 
 /******************************************************************************/
+long extractNumFromArg(char* arg, int radix)
+{
+	char delayStr[strlen(arg) - 1];
+	strncpy(delayStr, arg+2, strlen(arg) - 1);
+	char *endptr;
+	long num = strtol(delayStr, &endptr, radix);
+	if (endptr != delayStr && *endptr == '\0') {
+		return num;
+	}
+	return -1;
+}
+
 int main(int argc, char* argv[])
 {
     printf(
-        "GBlinkDX PC Client v0.4\n"
+        "GBlinkDX PC Client v0.5+dev\n"
         "Original GBlinkdl by Brian Provinciano November 2nd, 2005 http://www.bripro.com\n"
-		"Modified by taizou 2016-2024\n\n");
+		"Modified by taizou 2016-2025\n\n");
 
     if(argc < 2) {
 		printf("Usage: gblinkdx \"output filename\" [options]\n"
-		" Options can be: "
+		" Options can be: \n"
         "  Modes (Set only one of these)\n"
         "   -i for interactive mode\n"
 		"   -q for quiet interactive mode\n"
@@ -335,6 +347,7 @@ int main(int argc, char* argv[])
         "  Connection options\n"
         "   -pXXXX Use 4-digit hexadecimal port base address XXXX e.g. -pD010. Default is 0378\n"
         "   -x Use xboo cable compatibility mode. Default is gblink cable mode\n"
+        "   -dXXX Override delay between byte transfers to XXX number of port reads e.g. -d64\n"
 		"  Any other value will be treated as a pre-dump script filename\n"
 		"                 (Scripted mode implies -o)\n\n");
         return 3;
@@ -347,27 +360,36 @@ int main(int argc, char* argv[])
         char *endptr;
         long port = strtol(portStr, &endptr, 16);
         if (endptr != portStr && *endptr == '\0') {
-            dataPort = (unsigned short)port;
+            dataPortOpt = (unsigned short)port;
         }
     }
+
+	int minDelay = 8;
+	int maxDelay = -1;
 
     if (argc >= 3) {
         for (int argno = 2; argno < argc; argno++) {
             if ( memcmp(argv[argno],"-x",2) == 0 ) {
-                xbooCompat = true;
+                xbooCompatOpt = true;
             } else if ( memcmp(argv[argno],"-p",2) == 0 && strlen(argv[argno]) == 6) {
-                char portStr[5];
-                strncpy(portStr, argv[argno]+2, 5);
-                char *endptr;
-                long port = strtol(portStr, &endptr, 16);
-                if (endptr != portStr && *endptr == '\0') {
-                    dataPort = (unsigned short)port;
+                long port = extractNumFromArg(argv[argno], 16);
+                if (port >= 0) {
+                    dataPortOpt = (unsigned short)port;
+                }
+            } else if ( memcmp(argv[argno],"-d",2) == 0 && strlen(argv[argno]) > 2) {
+                long delay = extractNumFromArg(argv[argno], 10);
+                if (delay >= 0) {
+                    minDelay = (int)delay;
+                	maxDelay = (int)delay;
                 }
             }
         }
     }
 
-    PPGBInit(dataPort, xbooCompat, 8, -1, printMessage);
+    int res = PPGBInit(dataPortOpt, xbooCompatOpt, minDelay, maxDelay, printMessage);
+	if (res == -1) {
+		return -1;
+	}
 
     // perform communication
 	printf("Waiting for Game Boy...\n");
