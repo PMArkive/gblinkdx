@@ -367,7 +367,10 @@ int main(int argc, char* argv[])
         }
     }
 
-    PPGBInit(dataPortOpt, xbooCompatOpt, 8, -1, printMessage);
+    int res = PPGBInit(dataPortOpt, xbooCompatOpt, 8, -1, printMessage);
+	if (res == -1) {
+		return -1;
+	}
 
     // perform communication
 	printf("Waiting for Game Boy...\n");
