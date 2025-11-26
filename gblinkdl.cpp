@@ -35,9 +35,9 @@ GBHDR hdr;
 U8 bank0[0x4000];
 char szt[1000];
 bool quietMode = false;
-bool xbooCompat = false;
+bool xbooCompatOpt = false;
 
-unsigned short dataPort = LPTREG_DATA;
+unsigned short dataPortOpt = LPTREG_DATA;
 
 void printMessage(const char* message)
 {
@@ -347,27 +347,27 @@ int main(int argc, char* argv[])
         char *endptr;
         long port = strtol(portStr, &endptr, 16);
         if (endptr != portStr && *endptr == '\0') {
-            dataPort = (unsigned short)port;
+            dataPortOpt = (unsigned short)port;
         }
     }
 
     if (argc >= 3) {
         for (int argno = 2; argno < argc; argno++) {
             if ( memcmp(argv[argno],"-x",2) == 0 ) {
-                xbooCompat = true;
+                xbooCompatOpt = true;
             } else if ( memcmp(argv[argno],"-p",2) == 0 && strlen(argv[argno]) == 6) {
                 char portStr[5];
                 strncpy(portStr, argv[argno]+2, 5);
                 char *endptr;
                 long port = strtol(portStr, &endptr, 16);
                 if (endptr != portStr && *endptr == '\0') {
-                    dataPort = (unsigned short)port;
+                    dataPortOpt = (unsigned short)port;
                 }
             }
         }
     }
 
-    PPGBInit(dataPort, xbooCompat, 8, -1, printMessage);
+    PPGBInit(dataPortOpt, xbooCompatOpt, 8, -1, printMessage);
 
     // perform communication
 	printf("Waiting for Game Boy...\n");
