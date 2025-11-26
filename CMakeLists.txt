@@ -9,6 +9,6 @@ set(SOURCE_FILES
         ppgb.c
         ppgb.h)
 
-set(CMAKE_CXX_FLAGS "-static-libgcc -static-libstdc++")
+set(CMAKE_CXX_FLAGS "-static-libgcc -static-libstdc++ -s")
 
 add_executable(gblinkdx ${SOURCE_FILES})
