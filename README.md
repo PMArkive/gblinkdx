@@ -2,7 +2,7 @@ GBlinkDX PC Client
 ==================
 Based on Brian Provinciano's GBlinkdl client from Nov 2005
 ([archived page](http://web.archive.org/web/20070203014624/http://www.bripro.com/low/hardware/index.php?page=gblinkdl))  
-Modifications by taizou 2016-2024
+Modifications by taizou 2016-2025
 
 A small tool designed to communicate with the GBlinkdl program for Game Boy via a parallel -> GB link cable and allow
 for dumping of ROMs, reverse engineering of mappers and other fun stuff.
@@ -55,8 +55,7 @@ as the gblinkdx executable.
 * Use the -p option on the command line followed by the 4-digit hexadecimal base address with no space e.g. `-pD010`
 
 In Windows you can find the port address in Device Manager -> Ports (COM & LPT) -> right-click on your expansion card 
--> Properties -> Resources -> I/O Range. The number at the start of the range is the base address. For example for the
-StarTech card it is D010.
+-> Properties -> Resources -> I/O Range. The number at the start of the range is the base address.
 
 Linking with a Game Boy
 -----------------------
@@ -122,6 +121,12 @@ Enables xboo cable compatibility mode. If not specified it will use gblink cable
 
 **-pXXXX**  
 Use parallel port base address XXXX, e.g. `-pD010`. See "Using a custom port" for more info.
+
+**-dXXX**  
+Override delay between byte transfers to XXX number of port reads, e.g. `-d64`.  
+Normally the software tries to determine this automatically to optimise transfer speed and stability, but it doesn't
+always work perfectly. If the connection is unstable & you get bad reads, try a higher number. 64 was the fixed delay 
+used in earlier versions, so `-d64` should be a good baseline if you're having problems.
 
 Interactive mode
 ----------------
